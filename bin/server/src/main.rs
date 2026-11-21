@@ -5,6 +5,8 @@
 // Can be split for scale — ingest cursor makes the worker restart-safe and rerunnable.
 #![forbid(unsafe_code)]
 
+mod mainnet_guard;
+
 use anyhow::{Context, Result};
 use octo_api::{build_router, AppState};
 use octo_email::EmailSender;
@@ -12,7 +14,7 @@ use octo_ingest::Supervisor;
 use octo_resilience::ResilienceConfig;
 use octo_store::Store;
 use octo_wallet_core::StellarNetwork;
-use octo_webhooks::WebhookSender;
+use octo_webhooks::{allow_local_webhooks, WebhookSender};
 use std::future::IntoFuture;
 use std::time::Duration;
 use tokio_util::sync::CancellationToken;
@@ -262,6 +264,7 @@ impl Config {
         // Accepted values: "mainnet" | "public", "testnet" | "test", "standalone".
         let network = StellarNetwork::parse(&network_str)
             .with_context(|| format!("invalid NETWORK: {network_str}"))?;
+        mainnet_guard::ensure_webhook_override_is_safe(network, allow_local_webhooks())?;
 
         let horizon_url = std::env::var("HORIZON_URL")
             .unwrap_or_else(|_| "https://horizon-testnet.stellar.org".to_string());
