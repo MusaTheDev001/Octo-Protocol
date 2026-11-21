@@ -87,7 +87,7 @@ responsible for the largest share of real-world crypto theft.
 | SQL injection | `sqlx` parameterized queries only; no string-built SQL | 5 |
 | AuthN/AuthZ bypass | Dashboard JWT **or** per-wallet API key, with per-route authorization. Sensitive actions (gas-tank provisioning, key-backup read, API-key management) require a JWT and reject API keys | 6 |
 | Stolen session token stays valid | Tokens carry a unique `jti`; `logout` **and** `refresh` deny-list the presented token, and every authenticated request checks the deny-list. (Refresh previously re-issued without revoking, and could even return a byte-identical token) | 6 |
-| SSRF via webhook/Horizon URLs | `is_safe_url` blocks loopback, private, link-local and carrier-grade-NAT targets — IPv4 **and bracketed IPv6** (a naive `:`-split previously let `[fe80::1]` through) | 9 |
+| SSRF via webhook/Horizon URLs | `is_safe_url` blocks loopback, private, link-local, carrier-grade-NAT, reserved/documentation, and other non-routable targets — IPv4 **and bracketed IPv6**. `OCTO_ALLOW_LOCAL_WEBHOOKS=1` is limited to development/tests and is rejected during mainnet startup | 9 |
 | Webhook forgery / tampering | Outbound webhooks **HMAC-SHA256 signed**; consumers verify. Inbound (if any) verified | 9 |
 | Replay of API requests | TLS; mutating on-chain actions are pinned by the signed transaction's sequence number, so a replay is rejected on-chain | 10 |
 | Secrets in env/CI logs | `.env` git-ignored; CI uses masked secrets; no secret echoed in logs | 2 ✓ |
