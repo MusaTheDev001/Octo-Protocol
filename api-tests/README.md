@@ -24,6 +24,8 @@ https://www.usebruno.com
 5. **Payment Links → Public - ...** requests exercise the same flow a real payer's browser
    would, with no auth — this is what a developer integrating checkout actually calls.
 
+> **Webhooks → Test Webhook** calls `POST /v1/wallets/:id/webhooks/:endpoint_id/test`. That route is not implemented on `main` yet, so the request returns 404 until it is.
+
 ## Why some requests can't just be "run"
 
 `Create Wallet` and `Public - Submit Signed` both require an ed25519 signature made with a
